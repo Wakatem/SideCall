@@ -4,72 +4,8 @@ import 'package:gradient_borders/gradient_borders.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<String> getFolderPath() async {
-  Directory temp = await getTemporaryDirectory();
-  Directory currentFolder = Directory(temp.path + '\\SideCall');
-  bool folderExists = await currentFolder.exists();
 
-  if (!folderExists) {
-    currentFolder = await currentFolder.create();
-  }
-  return currentFolder.path;
-}
-
-Future<File> getDataFile(String type) async {
-  final path = await getFolderPath();
-  String dataPath = '$path\\' + type + ".txt";
-  File dataFile = File(dataPath);
-  bool fileExists = await dataFile.exists();
-
-  if (!fileExists) {
-    dataFile = await dataFile.create();
-    final content = (type == 'SDuser' ? 'ABC' : ''); // assign default username
-    dataFile.writeAsString(content);
-  } else {
-    debugPrint('$type exists!');
-  }
-
-  return dataFile;
-}
-
-Future storeRoomName(String roomName) async {
-  //read rooms
-  File data = await getDataFile('SDrooms');
-  var content = await data.readAsString();
-  var rooms = content.split(',');
-
-  //update and store rooms
-  if (content.isEmpty) {
-    content += roomName;
-  } else if (rooms.indexOf(roomName) == -1) {
-    content += "," + roomName;
-  }
-  await data.writeAsString(content);
-}
-
-Future<List<String>> getRooms() async {
-  File data = await getDataFile('SDrooms');
-  var content = await data.readAsString();
-
-  if (content.isNotEmpty) {
-    return content.split(',');
-  }
-
-  return List.empty();
-}
-
-void updateUsername(String newUsername) async {
-  //read user data
-  File data = await getDataFile('SDuser');
-  await data.writeAsString(newUsername);
-}
-
-Future<String> getUsername() async {
-  File data = await getDataFile('SDuser');
-  var content = await data.readAsString();
-  return content;
-}
-
+////////////////////////////////////////////////////////////////////////      UI      ////////////////////////////////////////////////////////////////////////
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -325,4 +261,74 @@ class RoomCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+////////////////////////////////////////////////////////////////////////      Helper Functions      ////////////////////////////////////////////////////////////////////////
+
+
+Future<String> getFolderPath() async {
+  Directory temp = await getTemporaryDirectory();
+  Directory currentFolder = Directory(temp.path + '\\SideCall');
+  bool folderExists = await currentFolder.exists();
+
+  if (!folderExists) {
+    currentFolder = await currentFolder.create();
+  }
+  return currentFolder.path;
+}
+
+Future<File> getDataFile(String type) async {
+  final path = await getFolderPath();
+  String dataPath = '$path\\' + type + ".txt";
+  File dataFile = File(dataPath);
+  bool fileExists = await dataFile.exists();
+
+  if (!fileExists) {
+    dataFile = await dataFile.create();
+    final content = (type == 'SDuser' ? 'ABC' : ''); // assign default username
+    dataFile.writeAsString(content);
+  } else {
+    debugPrint('$type exists!');
+  }
+
+  return dataFile;
+}
+
+Future storeRoomName(String roomName) async {
+  //read rooms
+  File data = await getDataFile('SDrooms');
+  var content = await data.readAsString();
+  var rooms = content.split(',');
+
+  //update and store rooms
+  if (content.isEmpty) {
+    content += roomName;
+  } else if (rooms.indexOf(roomName) == -1) {
+    content += "," + roomName;
+  }
+  await data.writeAsString(content);
+}
+
+Future<List<String>> getRooms() async {
+  File data = await getDataFile('SDrooms');
+  var content = await data.readAsString();
+
+  if (content.isNotEmpty) {
+    return content.split(',');
+  }
+
+  return List.empty();
+}
+
+void updateUsername(String newUsername) async {
+  //read user data
+  File data = await getDataFile('SDuser');
+  await data.writeAsString(newUsername);
+}
+
+Future<String> getUsername() async {
+  File data = await getDataFile('SDuser');
+  var content = await data.readAsString();
+  return content;
 }
