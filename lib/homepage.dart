@@ -118,25 +118,32 @@ class _HomepageState extends State<Homepage> {
           backgroundColor: const Color.fromRGBO(16, 24, 38, 1),
           body: Row(
             children: [
-              SizedBox(
-                  height: double.infinity,
-                  width: 180,
-                  child: rooms.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'No saved rooms to display',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontStyle: FontStyle.italic),
-                          ),
-                        )
-                      : ListView(
-                          children: rooms
-                              .map((room) => RoomCard(roomKey: room))
-                              .toList(),
-                        )),
-              const VerticalDivider(
-                color: Colors.white30,
+              Stack(
+                children: [
+                  SizedBox(
+                      height: double.infinity,
+                      width: 180,
+                      child: rooms.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No saved rooms to display',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic),
+                              ),
+                            )
+                          : ListView(
+                              children: rooms
+                                  .map((room) => RoomCard(roomKey: room))
+                                  .toList(),
+                            )),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 173),
+                    child: VerticalDivider(
+                      color: Colors.white30,
+                    ),
+                  )
+                ],
               ),
               Expanded(
                 child: Column(
