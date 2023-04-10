@@ -15,15 +15,18 @@ Future<String> getFolderPath() async {
   return currentFolder.path;
 }
 
-Future<File> getRoomsFile() async {
+Future<File> getDataFile(String type) async {
   final path = await getFolderPath();
-  File dataFile = File('$path\\SDrooms.txt');
+  String dataPath = '$path\\' + type + ".txt";
+  File dataFile = File(dataPath);
   bool fileExists = await dataFile.exists();
 
   if (!fileExists) {
     dataFile = await dataFile.create();
-    const content = "";
+    final content = (type == 'SDuser' ? 'ABC' : ''); // assign default username
     dataFile.writeAsString(content);
+  } else {
+    debugPrint('$type exists!');
   }
 
   return dataFile;
@@ -31,7 +34,7 @@ Future<File> getRoomsFile() async {
 
 void storeRoomName(String roomName) async {
   //read rooms
-  File data = await getRoomsFile();
+  File data = await getDataFile('SDrooms');
   var content = await data.readAsString();
 
   //update and store rooms
@@ -45,7 +48,7 @@ void storeRoomName(String roomName) async {
 }
 
 Future<List<String>> getRooms() async {
-  File data = await getRoomsFile();
+  File data = await getDataFile('SDrooms');
   var content = await data.readAsString();
 
   if (content.isNotEmpty) {
@@ -53,6 +56,18 @@ Future<List<String>> getRooms() async {
   }
 
   return List.empty();
+}
+
+void updateUsername(String newUsername) async {
+  //read user data
+  File data = await getDataFile('SDuser');
+  await data.writeAsString(newUsername);
+}
+
+Future<String> getUsername() async {
+  File data = await getDataFile('SDuser');
+  var content = await data.readAsString();
+  return content;
 }
 
 class Homepage extends StatefulWidget {
@@ -63,7 +78,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String username = "Abc";
+  String username = "";
   bool editUsername = false;
   bool saveRoom = false;
   var rooms = [];
@@ -71,17 +86,25 @@ class _HomepageState extends State<Homepage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController roomController = TextEditingController();
 
-  void setRooms() async {
-    var temp = await getRooms();
+  void setData() async {
+    var roomsTemp = await getRooms();
+    var usernameTemp = await getUsername();
     setState(() {
-      rooms = temp;
+      rooms = roomsTemp;
+      username = usernameTemp;
+      usernameController.text = usernameTemp;
     });
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    usernameController.text = username;
-    setRooms();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -154,9 +177,9 @@ class _HomepageState extends State<Homepage> {
                                 : const Text('Edit'),
                             onPressed: () => setState(() {
                               editUsername = !editUsername;
-                              setState(() {
-                                username = usernameController.text;
-                              });
+                              //when saving
+                              if (!editUsername)
+                                updateUsername(usernameController.text);
                             }),
                           ),
                         ),
@@ -240,7 +263,9 @@ class _HomepageState extends State<Homepage> {
                             child: const Text('Join',
                                 style: TextStyle(fontSize: 15)),
                             onPressed: () async {
-                              saveRoom ? storeRoomName(roomController.text) : null;
+                              saveRoom
+                                  ? storeRoomName(roomController.text)
+                                  : null;
                             },
                           ),
                         ),
