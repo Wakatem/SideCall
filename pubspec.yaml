@@ -43,6 +43,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.0
   gradient_borders: ^1.0.0
   flutter_switch: ^0.3.2
+  path_provider: ^2.0.14
 
 dev_dependencies:
   flutter_test:

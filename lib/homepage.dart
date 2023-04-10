@@ -1,6 +1,59 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:path_provider/path_provider.dart';
+
+Future<String> getFolderPath() async {
+  Directory temp = await getTemporaryDirectory();
+  Directory currentFolder = Directory(temp.path + '\\SideCall');
+  bool folderExists = await currentFolder.exists();
+
+  if (!folderExists) {
+    currentFolder = await currentFolder.create();
+  }
+  return currentFolder.path;
+}
+
+Future<File> getRoomsFile() async {
+  final path = await getFolderPath();
+  File dataFile = File('$path\\SDrooms.txt');
+  bool fileExists = await dataFile.exists();
+
+  if (!fileExists) {
+    dataFile = await dataFile.create();
+    const content = "";
+    dataFile.writeAsString(content);
+  }
+
+  return dataFile;
+}
+
+void storeRoomName(String roomName) async {
+  //read rooms
+  File data = await getRoomsFile();
+  var content = await data.readAsString();
+
+  //update and store rooms
+  if (content.isEmpty) {
+    content += roomName;
+    await data.writeAsString(content);
+  } else if (!content.contains(roomName)) {
+    content += "," + roomName;
+    await data.writeAsString(content);
+  }
+}
+
+Future<List<String>> getRooms() async {
+  File data = await getRoomsFile();
+  var content = await data.readAsString();
+
+  if (content.isNotEmpty) {
+    return content.split(',');
+  }
+
+  return List.empty();
+}
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -18,9 +71,17 @@ class _HomepageState extends State<Homepage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController roomController = TextEditingController();
 
+  void setRooms() async {
+    var temp = await getRooms();
+    setState(() {
+      rooms = temp;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     usernameController.text = username;
+    setRooms();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -178,7 +239,9 @@ class _HomepageState extends State<Homepage> {
                                         Color.fromRGBO(44, 22, 65, 1))),
                             child: const Text('Join',
                                 style: TextStyle(fontSize: 15)),
-                            onPressed: () {},
+                            onPressed: () async {
+                              saveRoom ? storeRoomName(roomController.text) : null;
+                            },
                           ),
                         ),
                       ],
