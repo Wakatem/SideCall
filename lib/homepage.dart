@@ -32,19 +32,19 @@ Future<File> getDataFile(String type) async {
   return dataFile;
 }
 
-void storeRoomName(String roomName) async {
+Future storeRoomName(String roomName) async {
   //read rooms
   File data = await getDataFile('SDrooms');
   var content = await data.readAsString();
+  var rooms = content.split(',');
 
   //update and store rooms
   if (content.isEmpty) {
     content += roomName;
-    await data.writeAsString(content);
-  } else if (!content.contains(roomName)) {
+  } else if (rooms.indexOf(roomName) == -1) {
     content += "," + roomName;
-    await data.writeAsString(content);
   }
+  await data.writeAsString(content);
 }
 
 Future<List<String>> getRooms() async {
@@ -96,6 +96,13 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  Future updateRoomsList() async {
+    var roomsTemp = await getRooms();
+    setState(() {
+      rooms = roomsTemp;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -105,7 +112,6 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -263,9 +269,10 @@ class _HomepageState extends State<Homepage> {
                             child: const Text('Join',
                                 style: TextStyle(fontSize: 15)),
                             onPressed: () async {
-                              saveRoom
-                                  ? storeRoomName(roomController.text)
-                                  : null;
+                              if (saveRoom) {
+                                await storeRoomName(roomController.text);
+                                await updateRoomsList();
+                              }
                             },
                           ),
                         ),
