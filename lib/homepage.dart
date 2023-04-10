@@ -93,6 +93,9 @@ class _HomepageState extends State<Homepage> {
                                 : const Text('Edit'),
                             onPressed: () => setState(() {
                               editUsername = !editUsername;
+                              setState(() {
+                                username = usernameController.text;
+                              });
                             }),
                           ),
                         ),
