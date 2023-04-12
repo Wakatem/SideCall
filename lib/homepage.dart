@@ -46,21 +46,20 @@ class _HomepageState extends State<Homepage> {
           width: 180,
           child: Stack(
             children: [
-              rooms.isEmpty ? const Center(
-                          child: Text(
-                            'No saved rooms to display',
-                            style: TextStyle(
-                                color: Colors.white, fontStyle: FontStyle.italic),
-                          ),
-                        )
-                      : ListView(
-                          children: rooms
-                              .map((room) => RoomCard(roomKey: room))
-                              .toList(),
-                        ),
-                        
+              rooms.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No saved rooms to display',
+                        style: TextStyle(
+                            color: Colors.white, fontStyle: FontStyle.italic),
+                      ),
+                    )
+                  : ListView(
+                      children:
+                          rooms.map((room) => RoomCard(roomKey: room)).toList(),
+                    ),
               const Padding(
-                padding: EdgeInsets.only(left: 173),
+                padding: EdgeInsets.only(left: 178),
                 child: VerticalDivider(
                   color: Colors.white30,
                 ),
@@ -110,10 +109,9 @@ class _MainWidgetState extends State<MainWidget> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Stack(
-        children: [
-          CustomWindowTop(),
-          Column(
+      child: Stack(children: [
+        CustomWindowTop(),
+        Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Image.asset(
@@ -149,11 +147,13 @@ class _MainWidgetState extends State<MainWidget> {
                 Padding(
                   padding: const EdgeInsets.only(top: 30.0, left: 20.0),
                   child: ElevatedButton(
-                    child: editUsername ? const Text('Save') : const Text('Edit'),
+                    child:
+                        editUsername ? const Text('Save') : const Text('Edit'),
                     onPressed: () => setState(() {
                       editUsername = !editUsername;
                       //when saving
-                      if (!editUsername) updateUsername(usernameController.text);
+                      if (!editUsername)
+                        updateUsername(usernameController.text);
                     }),
                   ),
                 ),
@@ -228,7 +228,8 @@ class _MainWidgetState extends State<MainWidget> {
                   padding: const EdgeInsets.only(top: 28.0),
                   child: ElevatedButton(
                     style: const ButtonStyle(
-                        fixedSize: MaterialStatePropertyAll<Size>(Size(140, 30)),
+                        fixedSize:
+                            MaterialStatePropertyAll<Size>(Size(140, 30)),
                         backgroundColor: MaterialStatePropertyAll<Color>(
                             Color.fromRGBO(44, 22, 65, 1))),
                     child: const Text('Join', style: TextStyle(fontSize: 15)),
