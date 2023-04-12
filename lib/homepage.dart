@@ -41,33 +41,34 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Stack(
-          children: [
-            SizedBox(
-                height: double.infinity,
-                width: 180,
-                child: rooms.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No saved rooms to display',
-                          style: TextStyle(
-                              color: Colors.white, fontStyle: FontStyle.italic),
+        SizedBox(
+          height: double.infinity,
+          width: 180,
+          child: Stack(
+            children: [
+              rooms.isEmpty ? const Center(
+                          child: Text(
+                            'No saved rooms to display',
+                            style: TextStyle(
+                                color: Colors.white, fontStyle: FontStyle.italic),
+                          ),
+                        )
+                      : ListView(
+                          children: rooms
+                              .map((room) => RoomCard(roomKey: room))
+                              .toList(),
                         ),
-                      )
-                    : ListView(
-                        children: rooms
-                            .map((room) => RoomCard(roomKey: room))
-                            .toList(),
-                      )),
-            const Padding(
-              padding: EdgeInsets.only(left: 173),
-              child: VerticalDivider(
-                color: Colors.white30,
-              ),
-            )
-          ],
+                        
+              const Padding(
+                padding: EdgeInsets.only(left: 173),
+                child: VerticalDivider(
+                  color: Colors.white30,
+                ),
+              )
+            ],
+          ),
         ),
-        MainWidget(updateRoomsFunc: updateRoomsList()),
+        MainWidget(updateRoomsFunc: updateRoomsList),
       ],
     );
   }
